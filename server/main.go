@@ -10,6 +10,7 @@ import (
 	"os/signal"
 
 	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -33,11 +34,26 @@ type user_item struct {
 	Phone int64              `bson:"phone"`
 }
 
-func pushUserToDb(ctx context.Context, item user_item) primitive.ObjectID {
-	res, err := collection.InsertOne(ctx, item)
+func pushUserToDb(ctx context.Context, item user_item) string {
+	email := item.Email
+	filter := bson.M{
+		"email": email,
+	}
+
+	var result_data []user_item
+	cursor, err := collection.Find(context.TODO(), filter)
 	handleError(err)
 
-	return res.InsertedID.(primitive.ObjectID)
+	cursor.All(context.Background(), &result_data)
+
+	if len(result_data) != 0 {
+		result := "User already exist"
+		return result
+	}
+
+	collection.InsertOne(ctx, item)
+	result := "User created"
+	return result
 }
 
 func (*server) UserAdd(ctx context.Context, req *activity_pb.UserRequest) (*activity_pb.UserResponse, error) {
@@ -51,8 +67,8 @@ func (*server) UserAdd(ctx context.Context, req *activity_pb.UserRequest) (*acti
 		Email: email,
 		Phone: phone,
 	}
-	docid := pushUserToDb(ctx, newUserItem)
-	result := fmt.Sprintf("User: %v is created with docid %v", name, docid)
+	dbres := pushUserToDb(ctx, newUserItem)
+	result := fmt.Sprintf("%v", dbres)
 
 	userAddResponse := activity_pb.UserResponse{
 		Result: result,
