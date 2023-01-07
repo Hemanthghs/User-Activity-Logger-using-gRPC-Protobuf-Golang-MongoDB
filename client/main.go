@@ -19,11 +19,13 @@ func UserAdd(c activity_pb.UserServiceClient) {
 	userAddRequest := activity_pb.UserRequest{
 		User: &activity_pb.User{
 			Name:  "hemanth",
-			Email: "hemanth@gmail.com",
+			Email: "hemanth3@gmail.com",
 			Phone: 1234567890,
 		},
 	}
-	c.UserAdd(context.Background(), &userAddRequest)
+	res, err := c.UserAdd(context.Background(), &userAddRequest)
+	handleError(err)
+	fmt.Println(res)
 }
 
 func main() {
