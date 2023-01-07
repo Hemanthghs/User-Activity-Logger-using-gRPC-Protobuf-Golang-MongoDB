@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package activity_pb;
+option go_package = "/activity_pb";
+
+message User {
+    string name = 1;
+    string email = 2;
+    int64 phone = 3;
+}
+
+message UserRequest {
+    User user = 1;
+}
+
+message UserResponse {
+    string result = 1;
+}
+
+service UserService {
+    rpc UserAdd(UserRequest) returns (UserResponse) {};
+}
