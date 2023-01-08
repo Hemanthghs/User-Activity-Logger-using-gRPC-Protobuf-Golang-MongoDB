@@ -29,6 +29,12 @@ func UserAdd(c activity_pb.UserServiceClient) {
 	fmt.Println(res)
 }
 
+func getTimeStamp() string {
+	t := time.Now()
+	ts := t.Format("01-02-2006 15:04:05 Monday")
+	return ts
+}
+
 func ActivityAdd(c activity_pb.UserServiceClient) {
 	t := time.Now()
 	ts := t.Format("01-02-2006 15:04:05 Monday")
@@ -58,6 +64,7 @@ func ActivityIsValid(c activity_pb.UserServiceClient) {
 }
 
 func main() {
+	fmt.Println(getTimeStamp())
 	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
 	handleError(err)
 	fmt.Println("Client started")
