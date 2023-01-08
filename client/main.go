@@ -36,7 +36,7 @@ func ActivityAdd(c activity_pb.UserServiceClient) {
 		Activity: &activity_pb.Activity{
 			ActivityType: "Sleep",
 			Timestamp:    ts,
-			Duration:     2,
+			Duration:     1,
 			Label:        "label1",
 			Email:        "hemanth@gmail.com",
 		},
