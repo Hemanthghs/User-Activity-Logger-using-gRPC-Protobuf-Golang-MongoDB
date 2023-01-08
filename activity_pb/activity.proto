@@ -33,7 +33,17 @@ message ActivityResponse {
     string result = 1;
 }
 
+message ActivityIsValidRequest {
+    string email = 1;
+    string activitytype = 2;
+}
+
+message ActivityIsValidResponse {
+    string result = 1;
+}
+
 service UserService {
     rpc UserAdd(UserRequest) returns (UserResponse) {};
     rpc ActivityAdd(ActivityRequest) returns (ActivityResponse) {};
+    rpc ActivityIsValid(ActivityIsValidRequest) returns (ActivityIsValidResponse) {};
 }

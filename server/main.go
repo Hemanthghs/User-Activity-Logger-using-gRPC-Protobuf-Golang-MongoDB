@@ -37,7 +37,7 @@ type user_item struct {
 type activity_item struct {
 	Id           primitive.ObjectID `bson:"_id,omitempty"`
 	ActivityType string             `bson:"activity_type"`
-	Duration     int32              `bson:"duratoin"`
+	Duration     int32              `bson:"duration"`
 	Label        string             `bson:"label"`
 	Timestamp    string             `bson:"timestamp"`
 	Email        string             `bson:"email"`
@@ -114,6 +114,35 @@ func (*server) ActivityAdd(ctx context.Context, req *activity_pb.ActivityRequest
 
 	return &activityAddResponse, nil
 
+}
+
+func (*server) ActivityIsValid(ctx context.Context, req *activity_pb.ActivityIsValidRequest) (*activity_pb.ActivityIsValidResponse, error) {
+	fmt.Println(req)
+	email := req.GetEmail()
+	activity_type := req.GetActivitytype()
+	filter := bson.M{
+		"email":         email,
+		"activity_type": activity_type,
+	}
+	var result_data []activity_item
+	cursor, err := collection.Find(context.Background(), filter)
+	handleError(err)
+	cursor.All(context.Background(), &result_data)
+	var result string
+	if len(result_data) == 0 {
+		result = "No user exist with the given email"
+	} else {
+		if result_data[0].Duration > 2 {
+			result = "Activity is Valid"
+		} else {
+			result = "Activity is Not Valid"
+		}
+	}
+
+	activityIsValidResponse := activity_pb.ActivityIsValidResponse{
+		Result: result,
+	}
+	return &activityIsValidResponse, nil
 }
 
 func goDotEnvVariable(key string) string {

@@ -44,6 +44,16 @@ func ActivityAdd(c activity_pb.UserServiceClient) {
 	fmt.Println(res)
 }
 
+func ActivityIsValid(c activity_pb.UserServiceClient) {
+	activityIsValidResquest := activity_pb.ActivityIsValidRequest{
+		Email:        "hemanth2@gmail.com",
+		Activitytype: "Play",
+	}
+	res, err := c.ActivityIsValid(context.Background(), &activityIsValidResquest)
+	handleError(err)
+	fmt.Println(res)
+}
+
 func main() {
 	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
 	handleError(err)
@@ -52,5 +62,6 @@ func main() {
 
 	c := activity_pb.NewUserServiceClient(conn)
 	// UserAdd(c)
-	ActivityAdd(c)
+	// ActivityAdd(c)
+	ActivityIsValid(c)
 }

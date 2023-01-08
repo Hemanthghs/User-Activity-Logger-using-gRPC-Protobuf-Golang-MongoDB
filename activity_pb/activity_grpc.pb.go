@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	UserAdd(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	ActivityAdd(ctx context.Context, in *ActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error)
+	ActivityIsValid(ctx context.Context, in *ActivityIsValidRequest, opts ...grpc.CallOption) (*ActivityIsValidResponse, error)
 }
 
 type userServiceClient struct {
@@ -52,12 +53,22 @@ func (c *userServiceClient) ActivityAdd(ctx context.Context, in *ActivityRequest
 	return out, nil
 }
 
+func (c *userServiceClient) ActivityIsValid(ctx context.Context, in *ActivityIsValidRequest, opts ...grpc.CallOption) (*ActivityIsValidResponse, error) {
+	out := new(ActivityIsValidResponse)
+	err := c.cc.Invoke(ctx, "/activity_pb.UserService/ActivityIsValid", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
 	UserAdd(context.Context, *UserRequest) (*UserResponse, error)
 	ActivityAdd(context.Context, *ActivityRequest) (*ActivityResponse, error)
+	ActivityIsValid(context.Context, *ActivityIsValidRequest) (*ActivityIsValidResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedUserServiceServer) UserAdd(context.Context, *UserRequest) (*U
 }
 func (UnimplementedUserServiceServer) ActivityAdd(context.Context, *ActivityRequest) (*ActivityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ActivityAdd not implemented")
+}
+func (UnimplementedUserServiceServer) ActivityIsValid(context.Context, *ActivityIsValidRequest) (*ActivityIsValidResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ActivityIsValid not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -120,6 +134,24 @@ func _UserService_ActivityAdd_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ActivityIsValid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivityIsValidRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ActivityIsValid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/activity_pb.UserService/ActivityIsValid",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ActivityIsValid(ctx, req.(*ActivityIsValidRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +166,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ActivityAdd",
 			Handler:    _UserService_ActivityAdd_Handler,
+		},
+		{
+			MethodName: "ActivityIsValid",
+			Handler:    _UserService_ActivityIsValid_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
