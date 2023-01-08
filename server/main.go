@@ -28,19 +28,19 @@ type server struct {
 }
 
 type user_item struct {
-	Id    primitive.ObjectID `bson:"_id.omitempty"`
+	Id    primitive.ObjectID `bson:"_id,omitempty"`
 	Name  string             `bson:"name"`
 	Email string             `bson:"email"`
 	Phone int64              `bson:"phone"`
 }
 
 type activity_item struct {
-	Id    primitive.ObjectID `bson:"_id.omitempty"`
-	Email string             `bson:"email"`
-	// ActivityType int32              `bson:"activity_type"`
-	Timestamp string `bson:"tiemstamp"`
-	Duration  int32  `bson:"duration"`
-	Label     string `bson:"label"`
+	Id           primitive.ObjectID `bson:"_id,omitempty"`
+	ActivityType string             `bson:"activity_type"`
+	Duration     int32              `bson:"duratoin"`
+	Label        string             `bson:"label"`
+	Timestamp    string             `bson:"timestamp"`
+	Email        string             `bson:"email"`
 }
 
 func pushUserToDb(ctx context.Context, item user_item) string {
@@ -66,10 +66,9 @@ func pushUserToDb(ctx context.Context, item user_item) string {
 }
 
 func pushActivityToDb(ctx context.Context, item activity_item) string {
-	_, err := collection.InsertOne(ctx, item)
-	handleError(err)
-
-	return "pushtoactivity called..."
+	collection.InsertOne(ctx, item)
+	result := "User activity added"
+	return result
 }
 
 func (*server) UserAdd(ctx context.Context, req *activity_pb.UserRequest) (*activity_pb.UserResponse, error) {
@@ -92,31 +91,28 @@ func (*server) UserAdd(ctx context.Context, req *activity_pb.UserRequest) (*acti
 	return &userAddResponse, nil
 }
 
-func (*server) UserActivityAdd(ctx context.Context, req *activity_pb.ActivityRequest) (*activity_pb.ActivityResponse, error) {
+func (*server) ActivityAdd(ctx context.Context, req *activity_pb.ActivityRequest) (*activity_pb.ActivityResponse, error) {
 	fmt.Println(req)
-	// activity_type := req.GetActivity().GetActivityType()
-	timestamp := req.GetActivity().GetTimestamp()
+	activity_type := req.GetActivity().GetActivityType()
 	duration := req.GetActivity().GetDuration()
 	label := req.GetActivity().GetLabel()
+	timestamp := req.GetActivity().GetTimestamp()
 	email := req.GetActivity().GetEmail()
-	newAtivityItem := activity_item{
-		Email: email,
-		// ActivityType: activity_type,
-		Timestamp: timestamp,
-		Duration:  duration,
+	newActivityItem := activity_item{
+		ActivityType: activity_type,
+		Duration:     duration,
+		Label:        label,
+		Timestamp:    timestamp,
+		Email:        email,
 	}
-	dbres := pushActivityToDb(ctx, newAtivityItem)
-	result := fmt.Sprintf("--- added %v ----", dbres)
-	userActivityAddResponse := activity_pb.ActivityResponse{
+	dbres := pushActivityToDb(ctx, newActivityItem)
+	result := fmt.Sprintf("%v", dbres)
+
+	activityAddResponse := activity_pb.ActivityResponse{
 		Result: result,
 	}
-	// fmt.Println(activity_type)
-	fmt.Println(timestamp)
-	fmt.Println(duration)
-	fmt.Println(label)
-	fmt.Println(email)
 
-	return &userActivityAddResponse, nil
+	return &activityAddResponse, nil
 
 }
 
@@ -156,7 +152,8 @@ func main() {
 	err = client.Connect(context.TODO())
 	handleError(err)
 
-	collection = client.Database("useractivity").Collection("activitystore")
+	// collection = client.Database("useractivity").Collection("userdata")
+	collection = client.Database("useractivity").Collection("useractivitydata")
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt)
