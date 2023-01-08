@@ -17,6 +17,31 @@ message UserResponse {
     string result = 1;
 }
 
+
+enum ActivityType {
+    PLAY = 0;
+    SLEEP = 1;
+    EAT = 2;
+    READ = 3;
+};
+
+message Activity {
+    ActivityType activity_type = 1;
+    string timestamp = 2;
+    int32 duration = 3;
+    string label = 4;
+    string email = 5;
+}
+
+message ActivityRequest {
+    Activity activity = 1;
+}
+
+message ActivityResponse {
+    string result = 1;
+}
+
 service UserService {
     rpc UserAdd(UserRequest) returns (UserResponse) {};
+    rpc UserActivityAdd(ActivityRequest) returns (ActivityResponse) {};
 }

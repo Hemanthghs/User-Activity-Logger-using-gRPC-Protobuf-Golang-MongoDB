@@ -19,11 +19,26 @@ func UserAdd(c activity_pb.UserServiceClient) {
 	userAddRequest := activity_pb.UserRequest{
 		User: &activity_pb.User{
 			Name:  "hemanth",
-			Email: "hemanth3@gmail.com",
+			Email: "hemanth4@gmail.com",
 			Phone: 1234567890,
 		},
 	}
 	res, err := c.UserAdd(context.Background(), &userAddRequest)
+	handleError(err)
+	fmt.Println(res)
+}
+
+func UserActivityAdd(c activity_pb.UserServiceClient) {
+	userActivityAddRequest := activity_pb.ActivityRequest{
+		Activity: &activity_pb.Activity{
+			ActivityType: 0,
+			Timestamp:    "12:30 AM Jan 10 2023",
+			Duration:     10,
+			Label:        "Working",
+			Email:        "hemanth@gmail.com",
+		},
+	}
+	res, err := c.UserActivityAdd(context.Background(), &userActivityAddRequest)
 	handleError(err)
 	fmt.Println(res)
 }
@@ -35,5 +50,6 @@ func main() {
 	defer conn.Close()
 
 	c := activity_pb.NewUserServiceClient(conn)
-	UserAdd(c)
+	// UserAdd(c)
+	UserActivityAdd(c)
 }

@@ -34,6 +34,15 @@ type user_item struct {
 	Phone int64              `bson:"phone"`
 }
 
+type activity_item struct {
+	Id    primitive.ObjectID `bson:"_id.omitempty"`
+	Email string             `bson:"email"`
+	// ActivityType int32              `bson:"activity_type"`
+	Timestamp string `bson:"tiemstamp"`
+	Duration  int32  `bson:"duration"`
+	Label     string `bson:"label"`
+}
+
 func pushUserToDb(ctx context.Context, item user_item) string {
 	email := item.Email
 	filter := bson.M{
@@ -56,6 +65,13 @@ func pushUserToDb(ctx context.Context, item user_item) string {
 	return result
 }
 
+func pushActivityToDb(ctx context.Context, item activity_item) string {
+	_, err := collection.InsertOne(ctx, item)
+	handleError(err)
+
+	return "pushtoactivity called..."
+}
+
 func (*server) UserAdd(ctx context.Context, req *activity_pb.UserRequest) (*activity_pb.UserResponse, error) {
 	fmt.Println(req)
 	name := req.GetUser().GetName()
@@ -74,6 +90,34 @@ func (*server) UserAdd(ctx context.Context, req *activity_pb.UserRequest) (*acti
 		Result: result,
 	}
 	return &userAddResponse, nil
+}
+
+func (*server) UserActivityAdd(ctx context.Context, req *activity_pb.ActivityRequest) (*activity_pb.ActivityResponse, error) {
+	fmt.Println(req)
+	// activity_type := req.GetActivity().GetActivityType()
+	timestamp := req.GetActivity().GetTimestamp()
+	duration := req.GetActivity().GetDuration()
+	label := req.GetActivity().GetLabel()
+	email := req.GetActivity().GetEmail()
+	newAtivityItem := activity_item{
+		Email: email,
+		// ActivityType: activity_type,
+		Timestamp: timestamp,
+		Duration:  duration,
+	}
+	dbres := pushActivityToDb(ctx, newAtivityItem)
+	result := fmt.Sprintf("--- added %v ----", dbres)
+	userActivityAddResponse := activity_pb.ActivityResponse{
+		Result: result,
+	}
+	// fmt.Println(activity_type)
+	fmt.Println(timestamp)
+	fmt.Println(duration)
+	fmt.Println(label)
+	fmt.Println(email)
+
+	return &userActivityAddResponse, nil
+
 }
 
 func goDotEnvVariable(key string) string {
@@ -112,7 +156,7 @@ func main() {
 	err = client.Connect(context.TODO())
 	handleError(err)
 
-	collection = client.Database("useractivity").Collection("useractivity")
+	collection = client.Database("useractivity").Collection("activitystore")
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt)
