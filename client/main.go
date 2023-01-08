@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"main/activity_pb"
+	"time"
 
 	"google.golang.org/grpc"
 )
@@ -29,11 +30,13 @@ func UserAdd(c activity_pb.UserServiceClient) {
 }
 
 func ActivityAdd(c activity_pb.UserServiceClient) {
+	t := time.Now()
+	ts := t.Format("01-02-2006 15:04:05 Monday")
 	activityAddRequest := activity_pb.ActivityRequest{
 		Activity: &activity_pb.Activity{
-			ActivityType: "Play",
-			Timestamp:    "20:28 PM IST Jan 8 2023",
-			Duration:     4,
+			ActivityType: "Sleep",
+			Timestamp:    ts,
+			Duration:     2,
 			Label:        "label1",
 			Email:        "hemanth@gmail.com",
 		},
@@ -46,8 +49,8 @@ func ActivityAdd(c activity_pb.UserServiceClient) {
 
 func ActivityIsValid(c activity_pb.UserServiceClient) {
 	activityIsValidResquest := activity_pb.ActivityIsValidRequest{
-		Email:        "hemanth2@gmail.com",
-		Activitytype: "Play",
+		Email:        "hemanth@gmail.com",
+		Activitytype: "Sleep",
 	}
 	res, err := c.ActivityIsValid(context.Background(), &activityIsValidResquest)
 	handleError(err)
