@@ -25,6 +25,8 @@ type UserServiceClient interface {
 	UserAdd(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	ActivityAdd(ctx context.Context, in *ActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error)
 	ActivityIsValid(ctx context.Context, in *ActivityIsValidRequest, opts ...grpc.CallOption) (*ActivityIsValidResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
+	ActivityIsDone(ctx context.Context, in *ActivityIsDoneRequest, opts ...grpc.CallOption) (*ActivityIsDoneResponse, error)
 }
 
 type userServiceClient struct {
@@ -62,6 +64,24 @@ func (c *userServiceClient) ActivityIsValid(ctx context.Context, in *ActivityIsV
 	return out, nil
 }
 
+func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
+	out := new(UpdateUserResponse)
+	err := c.cc.Invoke(ctx, "/activity_pb.UserService/UpdateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ActivityIsDone(ctx context.Context, in *ActivityIsDoneRequest, opts ...grpc.CallOption) (*ActivityIsDoneResponse, error) {
+	out := new(ActivityIsDoneResponse)
+	err := c.cc.Invoke(ctx, "/activity_pb.UserService/ActivityIsDone", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -69,6 +89,8 @@ type UserServiceServer interface {
 	UserAdd(context.Context, *UserRequest) (*UserResponse, error)
 	ActivityAdd(context.Context, *ActivityRequest) (*ActivityResponse, error)
 	ActivityIsValid(context.Context, *ActivityIsValidRequest) (*ActivityIsValidResponse, error)
+	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
+	ActivityIsDone(context.Context, *ActivityIsDoneRequest) (*ActivityIsDoneResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -84,6 +106,12 @@ func (UnimplementedUserServiceServer) ActivityAdd(context.Context, *ActivityRequ
 }
 func (UnimplementedUserServiceServer) ActivityIsValid(context.Context, *ActivityIsValidRequest) (*ActivityIsValidResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ActivityIsValid not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+}
+func (UnimplementedUserServiceServer) ActivityIsDone(context.Context, *ActivityIsDoneRequest) (*ActivityIsDoneResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ActivityIsDone not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -152,6 +180,42 @@ func _UserService_ActivityIsValid_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/activity_pb.UserService/UpdateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateUser(ctx, req.(*UpdateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ActivityIsDone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivityIsDoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ActivityIsDone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/activity_pb.UserService/ActivityIsDone",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ActivityIsDone(ctx, req.(*ActivityIsDoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -170,6 +234,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ActivityIsValid",
 			Handler:    _UserService_ActivityIsValid_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _UserService_UpdateUser_Handler,
+		},
+		{
+			MethodName: "ActivityIsDone",
+			Handler:    _UserService_ActivityIsDone_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
