@@ -145,6 +145,59 @@ func (*server) ActivityIsValid(ctx context.Context, req *activity_pb.ActivityIsV
 	return &activityIsValidResponse, nil
 }
 
+func (*server) ActivityIsDone(ctx context.Context, req *activity_pb.ActivityIsDoneRequest) (*activity_pb.ActivityIsDoneResponse, error) {
+	fmt.Println(req)
+	email := req.GetEmail()
+	activity_type := req.GetActivitytype()
+	filter := bson.M{
+		"email":         email,
+		"activity_type": activity_type,
+	}
+	var result_data []activity_item
+	cursor, err := collection.Find(context.Background(), filter)
+	handleError(err)
+	cursor.All(context.Background(), &result_data)
+	var result string
+	if len(result_data) == 0 {
+		result = "No user exist with the given email"
+	} else {
+		if result_data[0].Duration > 4 {
+			result = "Activity is Done"
+		} else {
+			result = "Activity is Not Done"
+		}
+	}
+
+	activityIsDoneResponse := activity_pb.ActivityIsDoneResponse{
+		Result: result,
+	}
+	return &activityIsDoneResponse, nil
+
+}
+
+func (*server) UpdateUser(ctx context.Context, req *activity_pb.UpdateUserRequest) (*activity_pb.UpdateUserResponse, error) {
+	fmt.Println(req)
+	email := req.GetUser().GetEmail()
+	name := req.GetUser().GetName()
+	phone := req.GetUser().GetPhone()
+
+	filter := bson.M{
+		"email": email,
+	}
+
+	update := bson.D{{"$set", bson.D{{"email", email}, {"name", name}, {"phone", phone}}}}
+
+	_, err := collection.UpdateOne(context.Background(), filter, update)
+
+	handleError(err)
+	result := "User details updated"
+
+	updateUserResponse := activity_pb.UpdateUserResponse{
+		Result: result,
+	}
+	return &updateUserResponse, nil
+}
+
 func goDotEnvVariable(key string) string {
 	err := godotenv.Load(".env")
 

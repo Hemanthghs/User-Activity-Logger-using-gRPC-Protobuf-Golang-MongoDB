@@ -54,13 +54,37 @@ func ActivityAdd(c activity_pb.UserServiceClient) {
 }
 
 func ActivityIsValid(c activity_pb.UserServiceClient) {
-	activityIsValidResquest := activity_pb.ActivityIsValidRequest{
+	activityIsValidRequest := activity_pb.ActivityIsValidRequest{
 		Email:        "hemanth@gmail.com",
 		Activitytype: "Sleep",
 	}
-	res, err := c.ActivityIsValid(context.Background(), &activityIsValidResquest)
+	res, err := c.ActivityIsValid(context.Background(), &activityIsValidRequest)
 	handleError(err)
 	fmt.Println(res)
+}
+
+func ActivityIsDone(c activity_pb.UserServiceClient) {
+	activityIsDoneRequest := activity_pb.ActivityIsDoneRequest{
+		Email:        "hemanth@gmail.com",
+		Activitytype: "Play",
+	}
+	res, err := c.ActivityIsDone(context.Background(), &activityIsDoneRequest)
+	handleError(err)
+	fmt.Println(res)
+}
+
+func UpdateUser(c activity_pb.UserServiceClient) {
+	updateUserRequest := activity_pb.UpdateUserRequest{
+		User: &activity_pb.User{
+			Name:  "hemanth123",
+			Email: "hemanth1@gmail.com",
+			Phone: 8080808080,
+		},
+	}
+	res, err := c.UpdateUser(context.Background(), &updateUserRequest)
+	handleError(err)
+	fmt.Println(res)
+
 }
 
 func main() {
@@ -73,5 +97,7 @@ func main() {
 	c := activity_pb.NewUserServiceClient(conn)
 	// UserAdd(c)
 	// ActivityAdd(c)
-	ActivityIsValid(c)
+	// ActivityIsValid(c)
+	// UpdateUser(c)
+	ActivityIsDone(c)
 }
