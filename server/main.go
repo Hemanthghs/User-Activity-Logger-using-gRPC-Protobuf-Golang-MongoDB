@@ -200,10 +200,37 @@ func (*server) UpdateUser(ctx context.Context, req *activity_pb.UpdateUserReques
 
 func goDotEnvVariable(key string) string {
 	err := godotenv.Load(".env")
-
 	handleError(err)
-
 	return os.Getenv(key)
+}
+
+func (*server) GetUser(ctx context.Context, req *activity_pb.GetUserRequest) (*activity_pb.GetUserResponse, error) {
+	fmt.Println(req)
+	email := req.GetEmail()
+	filter := bson.M{
+		"email": email,
+	}
+	var result_data []user_item
+	cursor, err := collection.Find(context.TODO(), filter)
+	handleError(err)
+	cursor.All(context.Background(), &result_data)
+	if len(result_data) == 0 {
+		getUserResponse := activity_pb.GetUserResponse{
+			Status: false,
+			User:   nil,
+		}
+		return &getUserResponse, nil
+	} else {
+		getUserResponse := activity_pb.GetUserResponse{
+			Status: true,
+			User: &activity_pb.User{
+				Email: result_data[0].Email,
+				Name:  result_data[0].Name,
+				Phone: result_data[0].Phone,
+			},
+		}
+		return &getUserResponse, nil
+	}
 }
 
 var collection *mongo.Collection
@@ -234,8 +261,8 @@ func main() {
 	err = client.Connect(context.TODO())
 	handleError(err)
 
-	// collection = client.Database("useractivity").Collection("userdata")
-	collection = client.Database("useractivity").Collection("useractivitydata")
+	collection = client.Database("useractivity").Collection("userdata")
+	// collection = client.Database("useractivity").Collection("useractivitydata")
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt)

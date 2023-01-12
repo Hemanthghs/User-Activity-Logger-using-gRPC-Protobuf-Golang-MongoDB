@@ -87,6 +87,15 @@ func UpdateUser(c activity_pb.UserServiceClient) {
 
 }
 
+func GetUser(c activity_pb.UserServiceClient) {
+	getUserRequest := activity_pb.GetUserRequest{
+		Email: "hemanth22@gmail.com",
+	}
+	res, err := c.GetUser(context.Background(), &getUserRequest)
+	handleError(err)
+	fmt.Println(res)
+}
+
 func main() {
 	fmt.Println(getTimeStamp())
 	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
@@ -99,5 +108,6 @@ func main() {
 	// ActivityAdd(c)
 	// ActivityIsValid(c)
 	// UpdateUser(c)
-	ActivityIsDone(c)
+	// ActivityIsDone(c)
+	GetUser(c)
 }
