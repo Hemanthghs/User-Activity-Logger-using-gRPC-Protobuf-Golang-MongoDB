@@ -50,7 +50,7 @@ func pushUserToDb(ctx context.Context, item user_item) string {
 	}
 
 	var result_data []user_item
-	cursor, err := collection.Find(context.TODO(), filter)
+	cursor, err := user_collection.Find(context.TODO(), filter)
 	handleError(err)
 
 	cursor.All(context.Background(), &result_data)
@@ -59,14 +59,13 @@ func pushUserToDb(ctx context.Context, item user_item) string {
 		result := "User already exist"
 		return result
 	}
-
-	collection.InsertOne(ctx, item)
+	user_collection.InsertOne(ctx, item)
 	result := "User created"
 	return result
 }
 
 func pushActivityToDb(ctx context.Context, item activity_item) string {
-	collection.InsertOne(ctx, item)
+	activity_collection.InsertOne(ctx, item)
 	result := "User activity added"
 	return result
 }
@@ -125,7 +124,7 @@ func (*server) ActivityIsValid(ctx context.Context, req *activity_pb.ActivityIsV
 		"activity_type": activity_type,
 	}
 	var result_data []activity_item
-	cursor, err := collection.Find(context.Background(), filter)
+	cursor, err := activity_collection.Find(context.Background(), filter)
 	handleError(err)
 	cursor.All(context.Background(), &result_data)
 	var result string
@@ -154,7 +153,7 @@ func (*server) ActivityIsDone(ctx context.Context, req *activity_pb.ActivityIsDo
 		"activity_type": activity_type,
 	}
 	var result_data []activity_item
-	cursor, err := collection.Find(context.Background(), filter)
+	cursor, err := activity_collection.Find(context.Background(), filter)
 	handleError(err)
 	cursor.All(context.Background(), &result_data)
 	var result string
@@ -186,8 +185,7 @@ func (*server) UpdateUser(ctx context.Context, req *activity_pb.UpdateUserReques
 	}
 
 	update := bson.D{{"$set", bson.D{{"email", email}, {"name", name}, {"phone", phone}}}}
-
-	_, err := collection.UpdateOne(context.Background(), filter, update)
+	_, err := user_collection.UpdateOne(context.Background(), filter, update)
 
 	handleError(err)
 	result := "User details updated"
@@ -204,6 +202,37 @@ func goDotEnvVariable(key string) string {
 	return os.Getenv(key)
 }
 
+func (*server) GetActivity(ctx context.Context, req *activity_pb.GetActivityRequest) (*activity_pb.GetActivityResponse, error) {
+	fmt.Println(req)
+	email := req.GetEmail()
+	filter := bson.M{
+		"email": email,
+	}
+	var result_data []activity_item
+	cursor, err := activity_collection.Find(context.TODO(), filter)
+	handleError(err)
+	cursor.All(context.Background(), &result_data)
+	if len(result_data) == 0 {
+		getActivityResponse := activity_pb.GetActivityResponse{
+			Status:   false,
+			Activity: nil,
+		}
+		return &getActivityResponse, nil
+	} else {
+		getActivityResponse := activity_pb.GetActivityResponse{
+			Status: true,
+			Activity: &activity_pb.Activity{
+				ActivityType: result_data[0].ActivityType,
+				Timestamp:    result_data[0].Timestamp,
+				Duration:     result_data[0].Duration,
+				Label:        result_data[0].Label,
+				Email:        result_data[0].Email,
+			},
+		}
+		return &getActivityResponse, nil
+	}
+}
+
 func (*server) GetUser(ctx context.Context, req *activity_pb.GetUserRequest) (*activity_pb.GetUserResponse, error) {
 	fmt.Println(req)
 	email := req.GetEmail()
@@ -211,7 +240,7 @@ func (*server) GetUser(ctx context.Context, req *activity_pb.GetUserRequest) (*a
 		"email": email,
 	}
 	var result_data []user_item
-	cursor, err := collection.Find(context.TODO(), filter)
+	cursor, err := user_collection.Find(context.TODO(), filter)
 	handleError(err)
 	cursor.All(context.Background(), &result_data)
 	if len(result_data) == 0 {
@@ -233,7 +262,8 @@ func (*server) GetUser(ctx context.Context, req *activity_pb.GetUserRequest) (*a
 	}
 }
 
-var collection *mongo.Collection
+var user_collection *mongo.Collection
+var activity_collection *mongo.Collection
 
 func main() {
 	godotenv.Load(".env")
@@ -261,8 +291,8 @@ func main() {
 	err = client.Connect(context.TODO())
 	handleError(err)
 
-	collection = client.Database("useractivity").Collection("userdata")
-	// collection = client.Database("useractivity").Collection("useractivitydata")
+	user_collection = client.Database("useractivity").Collection("userdata")
+	activity_collection = client.Database("useractivity").Collection("useractivitydata")
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt)
