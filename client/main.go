@@ -89,11 +89,15 @@ func UpdateUser(c activity_pb.UserServiceClient) {
 
 func GetUser(c activity_pb.UserServiceClient) {
 	getUserRequest := activity_pb.GetUserRequest{
-		Email: "hemanth22@gmail.com",
+		Email: "hemanth2@gmail.com",
 	}
 	res, err := c.GetUser(context.Background(), &getUserRequest)
 	handleError(err)
 	fmt.Println(res)
+}
+
+func ClientTest() {
+	fmt.Println("clientTest called..")
 }
 
 func main() {
