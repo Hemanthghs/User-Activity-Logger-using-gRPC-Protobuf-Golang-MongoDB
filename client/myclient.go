@@ -103,6 +103,11 @@ func GetUser(c activity_pb.UserServiceClient, email string) {
 	fmt.Println(res)
 }
 
-func ClientTest() {
-	fmt.Println("clientTest called..")
+func RemoveUser(c activity_pb.UserServiceClient, email string) {
+	removeUserRequest := activity_pb.RemoveUserRequest{
+		Email: email,
+	}
+	res, err := c.RemoveUser(context.Background(), &removeUserRequest)
+	handleError(err)
+	fmt.Println(res)
 }
