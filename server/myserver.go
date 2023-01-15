@@ -174,6 +174,26 @@ func (*server) ActivityIsDone(ctx context.Context, req *activity_pb.ActivityIsDo
 
 }
 
+func (*server) RemoveUser(ctx context.Context, req *activity_pb.RemoveUserRequest) (*activity_pb.RemoveUserResponse, error) {
+	fmt.Println(req)
+	email := req.GetEmail()
+	filter := bson.M{
+		"email": email,
+	}
+	r, err := user_collection.DeleteOne(context.TODO(), filter)
+	handleError(err)
+	var result string
+	if r.DeletedCount == 0 {
+		result = "User does not exist"
+	} else {
+		result = "User deleted successfully"
+	}
+	removeUserResponse := activity_pb.RemoveUserResponse{
+		Result: result,
+	}
+	return &removeUserResponse, nil
+}
+
 func (*server) UpdateUser(ctx context.Context, req *activity_pb.UpdateUserRequest) (*activity_pb.UpdateUserResponse, error) {
 	fmt.Println(req)
 	email := req.GetUser().GetEmail()

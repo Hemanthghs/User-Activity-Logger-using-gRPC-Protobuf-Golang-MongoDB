@@ -29,6 +29,7 @@ type UserServiceClient interface {
 	ActivityIsDone(ctx context.Context, in *ActivityIsDoneRequest, opts ...grpc.CallOption) (*ActivityIsDoneResponse, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	GetActivity(ctx context.Context, in *GetActivityRequest, opts ...grpc.CallOption) (*GetActivityResponse, error)
+	RemoveUser(ctx context.Context, in *RemoveUserRequest, opts ...grpc.CallOption) (*RemoveUserResponse, error)
 }
 
 type userServiceClient struct {
@@ -102,6 +103,15 @@ func (c *userServiceClient) GetActivity(ctx context.Context, in *GetActivityRequ
 	return out, nil
 }
 
+func (c *userServiceClient) RemoveUser(ctx context.Context, in *RemoveUserRequest, opts ...grpc.CallOption) (*RemoveUserResponse, error) {
+	out := new(RemoveUserResponse)
+	err := c.cc.Invoke(ctx, "/activity_pb.UserService/RemoveUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -113,6 +123,7 @@ type UserServiceServer interface {
 	ActivityIsDone(context.Context, *ActivityIsDoneRequest) (*ActivityIsDoneResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
 	GetActivity(context.Context, *GetActivityRequest) (*GetActivityResponse, error)
+	RemoveUser(context.Context, *RemoveUserRequest) (*RemoveUserResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -140,6 +151,9 @@ func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) 
 }
 func (UnimplementedUserServiceServer) GetActivity(context.Context, *GetActivityRequest) (*GetActivityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActivity not implemented")
+}
+func (UnimplementedUserServiceServer) RemoveUser(context.Context, *RemoveUserRequest) (*RemoveUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -280,6 +294,24 @@ func _UserService_GetActivity_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_RemoveUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RemoveUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/activity_pb.UserService/RemoveUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RemoveUser(ctx, req.(*RemoveUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -314,6 +346,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetActivity",
 			Handler:    _UserService_GetActivity_Handler,
+		},
+		{
+			MethodName: "RemoveUser",
+			Handler:    _UserService_RemoveUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

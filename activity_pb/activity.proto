@@ -77,6 +77,15 @@ message GetActivityResponse {
     Activity activity = 2;
 }
 
+message RemoveUserRequest {
+    string email = 1;
+}
+
+message RemoveUserResponse {
+    string result = 1;
+}
+
+
 service UserService {
     rpc UserAdd(UserRequest) returns (UserResponse) {};
     rpc ActivityAdd(ActivityRequest) returns (ActivityResponse) {};
@@ -85,6 +94,7 @@ service UserService {
     rpc ActivityIsDone(ActivityIsDoneRequest) returns (ActivityIsDoneResponse) {};
     rpc GetUser(GetUserRequest) returns (GetUserResponse) {};
     rpc GetActivity(GetActivityRequest) returns (GetActivityResponse) {};
+    rpc RemoveUser(RemoveUserRequest) returns (RemoveUserResponse) {};
 }
 
 
