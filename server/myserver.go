@@ -17,6 +17,9 @@ import (
 	"google.golang.org/grpc"
 )
 
+/*
+function to handle runtime errors
+*/
 func handleError(err error) {
 	if err != nil {
 		log.Fatal(err)
@@ -27,6 +30,9 @@ type server struct {
 	activity_pb.UnimplementedUserServiceServer
 }
 
+/*
+Structure to store the user data to insert into mongodb
+*/
 type user_item struct {
 	Id    primitive.ObjectID `bson:"_id,omitempty"`
 	Name  string             `bson:"name"`
@@ -34,6 +40,9 @@ type user_item struct {
 	Phone int64              `bson:"phone"`
 }
 
+/*
+Structure to store the activity data to insert into mongodb
+*/
 type activity_item struct {
 	Id           primitive.ObjectID `bson:"_id,omitempty"`
 	ActivityType string             `bson:"activity_type"`
@@ -43,6 +52,16 @@ type activity_item struct {
 	Email        string             `bson:"email"`
 }
 
+/*
+function to insert user data to the database.
+Input:
+
+	user_item struct (contains the user details)
+
+Returns:
+
+	string (result = "User already exist" or "User created")
+*/
 func pushUserToDb(ctx context.Context, item user_item) string {
 	email := item.Email
 	filter := bson.M{
@@ -64,12 +83,33 @@ func pushUserToDb(ctx context.Context, item user_item) string {
 	return result
 }
 
+/*
+function to insert activity data to the database.
+Input:
+
+	activity_item struct (contains the activity details)
+
+Returns:
+
+	string (result = "User activity added")
+*/
 func pushActivityToDb(ctx context.Context, item activity_item) string {
 	activity_collection.InsertOne(ctx, item)
 	result := "User activity added"
 	return result
 }
 
+/*
+function to handle the add-user request from the client
+
+Input:
+
+	UserRequest
+
+Output:
+
+	UserResponse, error
+*/
 func (*server) UserAdd(ctx context.Context, req *activity_pb.UserRequest) (*activity_pb.UserResponse, error) {
 	fmt.Println(req)
 	name := req.GetUser().GetName()
@@ -90,6 +130,17 @@ func (*server) UserAdd(ctx context.Context, req *activity_pb.UserRequest) (*acti
 	return &userAddResponse, nil
 }
 
+/*
+function to handle the add-activity request from the client
+
+Input:
+
+	ActivityRequest
+
+Output:
+
+	ActivityResponse, error
+*/
 func (*server) ActivityAdd(ctx context.Context, req *activity_pb.ActivityRequest) (*activity_pb.ActivityResponse, error) {
 	fmt.Println(req)
 	activity_type := req.GetActivity().GetActivityType()
@@ -115,6 +166,17 @@ func (*server) ActivityAdd(ctx context.Context, req *activity_pb.ActivityRequest
 
 }
 
+/*
+function to handle the activity-is-valid request from the client
+
+Input:
+
+	ActivityIsValidRequest
+
+Output:
+
+	ActivityIsValidResponse, error
+*/
 func (*server) ActivityIsValid(ctx context.Context, req *activity_pb.ActivityIsValidRequest) (*activity_pb.ActivityIsValidResponse, error) {
 	fmt.Println(req)
 	email := req.GetEmail()
@@ -144,6 +206,17 @@ func (*server) ActivityIsValid(ctx context.Context, req *activity_pb.ActivityIsV
 	return &activityIsValidResponse, nil
 }
 
+/*
+function to handle the activity-is-done request from the client
+
+Input:
+
+	ActivityIsDoneRequest
+
+Output:
+
+	ActivityIsDoneResponse, error
+*/
 func (*server) ActivityIsDone(ctx context.Context, req *activity_pb.ActivityIsDoneRequest) (*activity_pb.ActivityIsDoneResponse, error) {
 	fmt.Println(req)
 	email := req.GetEmail()
@@ -174,6 +247,17 @@ func (*server) ActivityIsDone(ctx context.Context, req *activity_pb.ActivityIsDo
 
 }
 
+/*
+function to handle the remove-user request from the client
+
+Input:
+
+	RemoveUserRequest
+
+Output:
+
+	RemoveUserResponse, error
+*/
 func (*server) RemoveUser(ctx context.Context, req *activity_pb.RemoveUserRequest) (*activity_pb.RemoveUserResponse, error) {
 	fmt.Println(req)
 	email := req.GetEmail()
@@ -194,6 +278,17 @@ func (*server) RemoveUser(ctx context.Context, req *activity_pb.RemoveUserReques
 	return &removeUserResponse, nil
 }
 
+/*
+function to handle the update-user request from the client
+
+Input:
+
+	UpdateUserRequest
+
+Output:
+
+	UpdateUserResponse, error
+*/
 func (*server) UpdateUser(ctx context.Context, req *activity_pb.UpdateUserRequest) (*activity_pb.UpdateUserResponse, error) {
 	fmt.Println(req)
 	email := req.GetUser().GetEmail()
@@ -216,12 +311,34 @@ func (*server) UpdateUser(ctx context.Context, req *activity_pb.UpdateUserReques
 	return &updateUserResponse, nil
 }
 
+/*
+function to get the environment variable from .env file
+
+Input:
+
+	key
+
+Output:
+
+	string (value of env variable)
+*/
 func goDotEnvVariable(key string) string {
 	err := godotenv.Load(".env")
 	handleError(err)
 	return os.Getenv(key)
 }
 
+/*
+function handle get-activity request
+
+Input:
+
+	GetActivityRequest
+
+Output:
+
+	GetActivityResponse
+*/
 func (*server) GetActivity(ctx context.Context, req *activity_pb.GetActivityRequest) (*activity_pb.GetActivityResponse, error) {
 	fmt.Println(req)
 	email := req.GetEmail()
@@ -253,6 +370,17 @@ func (*server) GetActivity(ctx context.Context, req *activity_pb.GetActivityRequ
 	}
 }
 
+/*
+function to handle get-user request
+
+Input:
+
+	GetUserRequest
+
+Output:
+
+	GetUserResponse
+*/
 func (*server) GetUser(ctx context.Context, req *activity_pb.GetUserRequest) (*activity_pb.GetUserResponse, error) {
 	fmt.Println(req)
 	email := req.GetEmail()
@@ -286,8 +414,10 @@ var user_collection *mongo.Collection
 var activity_collection *mongo.Collection
 
 func main() {
+	//loading the .env file
 	godotenv.Load(".env")
 
+	//creating server
 	opts := []grpc.ServerOption{}
 	s := grpc.NewServer(opts...)
 
@@ -302,6 +432,7 @@ func main() {
 		}
 	}()
 
+	//connecting to the mongodb database
 	mongo_uri := goDotEnvVariable("MONGODB_URI")
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongo_uri))
 	handleError(err)
@@ -311,7 +442,10 @@ func main() {
 	err = client.Connect(context.TODO())
 	handleError(err)
 
+	//selecting the user data collection
 	user_collection = client.Database("useractivity").Collection("userdata")
+
+	//selecting the activity data collection
 	activity_collection = client.Database("useractivity").Collection("useractivitydata")
 
 	ch := make(chan os.Signal, 1)
