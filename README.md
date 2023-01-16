@@ -76,7 +76,7 @@ User Activity Logger is a CLI application to to track users daily activities.Dai
      client adduser <name> <email> <phone-number>
   
   #### To get user details
-     	client getuser --email=<email>
+     client getuser --email=<email>
   
   #### To get user activity
      client getact --email=<email>
