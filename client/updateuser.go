@@ -15,13 +15,15 @@ import (
 // updateuserCmd represents the updateuser command
 var updateuserCmd = &cobra.Command{
 	Use:   "updateuser",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "To update existing user details.",
+	Long: `To update existing user details.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Inputs:
+	email, name, phone-number
+
+Example:
+	client updateuser --email=<email> <name> <phone-number>
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		email, err := cmd.Flags().GetString("email")
 		if err != nil {

@@ -15,13 +15,16 @@ import (
 // addactCmd represents the addact command
 var addactCmd = &cobra.Command{
 	Use:   "addact",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "To add an activity of user",
+	Long: `To add a specific activity of a user.
+Activity types : (Play, Eat, Sleep, Study).
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Inputs:
+	email, activitytype, duration, label
+	
+Example:
+	client addact <email> <activitytype> <duration> <label>
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())

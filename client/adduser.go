@@ -15,13 +15,14 @@ import (
 // adduserCmd represents the adduser command
 var adduserCmd = &cobra.Command{
 	Use:   "adduser",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "To create a new user.",
+	Long: `To create a new user and insert into the database.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Inputs:
+	name, email, phone-number
+
+Example:
+	client adduser <name> <email> <phone-number>`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// fmt.Println(getTimeStamp())
 		conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
