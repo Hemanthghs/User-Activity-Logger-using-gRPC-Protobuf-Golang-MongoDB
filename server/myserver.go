@@ -264,10 +264,11 @@ func (*server) RemoveUser(ctx context.Context, req *activity_pb.RemoveUserReques
 	filter := bson.M{
 		"email": email,
 	}
-	r, err := user_collection.DeleteOne(context.TODO(), filter)
+	activity_collection.DeleteMany(context.TODO(), filter)
+	u_r, err := user_collection.DeleteOne(context.TODO(), filter)
 	handleError(err)
 	var result string
-	if r.DeletedCount == 0 {
+	if u_r.DeletedCount == 0 {
 		result = "User does not exist"
 	} else {
 		result = "User deleted successfully"
