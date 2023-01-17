@@ -18,7 +18,7 @@ message UserResponse {
 }
 
 message Activity {
-    string activity_type = 1;
+    string activitytype = 1;
     string timestamp = 2;
     int32 duration = 3;
     string label = 4;
