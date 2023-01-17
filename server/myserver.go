@@ -45,7 +45,7 @@ Structure to store the activity data to insert into mongodb
 */
 type activity_item struct {
 	Id           primitive.ObjectID `bson:"_id,omitempty"`
-	ActivityType string             `bson:"activity_type"`
+	Activitytype string             `bson:"activitytype"`
 	Duration     int32              `bson:"duration"`
 	Label        string             `bson:"label"`
 	Timestamp    string             `bson:"timestamp"`
@@ -143,13 +143,13 @@ Output:
 */
 func (*server) ActivityAdd(ctx context.Context, req *activity_pb.ActivityRequest) (*activity_pb.ActivityResponse, error) {
 	fmt.Println(req)
-	activity_type := req.GetActivity().GetActivityType()
+	activitytype := req.GetActivity().GetActivitytype()
 	duration := req.GetActivity().GetDuration()
 	label := req.GetActivity().GetLabel()
 	timestamp := req.GetActivity().GetTimestamp()
 	email := req.GetActivity().GetEmail()
 	newActivityItem := activity_item{
-		ActivityType: activity_type,
+		Activitytype: activitytype,
 		Duration:     duration,
 		Label:        label,
 		Timestamp:    timestamp,
@@ -180,10 +180,10 @@ Output:
 func (*server) ActivityIsValid(ctx context.Context, req *activity_pb.ActivityIsValidRequest) (*activity_pb.ActivityIsValidResponse, error) {
 	fmt.Println(req)
 	email := req.GetEmail()
-	activity_type := req.GetActivitytype()
+	activitytype := req.GetActivitytype()
 	filter := bson.M{
-		"email":         email,
-		"activity_type": activity_type,
+		"email":        email,
+		"activitytype": activitytype,
 	}
 	var result_data []activity_item
 	cursor, err := activity_collection.Find(context.Background(), filter)
@@ -220,10 +220,10 @@ Output:
 func (*server) ActivityIsDone(ctx context.Context, req *activity_pb.ActivityIsDoneRequest) (*activity_pb.ActivityIsDoneResponse, error) {
 	fmt.Println(req)
 	email := req.GetEmail()
-	activity_type := req.GetActivitytype()
+	activitytype := req.GetActivitytype()
 	filter := bson.M{
-		"email":         email,
-		"activity_type": activity_type,
+		"email":        email,
+		"activitytype": activitytype,
 	}
 	var result_data []activity_item
 	cursor, err := activity_collection.Find(context.Background(), filter)
@@ -360,7 +360,7 @@ func (*server) GetActivity(ctx context.Context, req *activity_pb.GetActivityRequ
 		getActivityResponse := activity_pb.GetActivityResponse{
 			Status: true,
 			Activity: &activity_pb.Activity{
-				ActivityType: result_data[0].ActivityType,
+				Activitytype: result_data[0].Activitytype,
 				Timestamp:    result_data[0].Timestamp,
 				Duration:     result_data[0].Duration,
 				Label:        result_data[0].Label,
