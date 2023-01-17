@@ -31,12 +31,11 @@ Example:
 		handleError(err)
 		defer conn.Close()
 		c := activity_pb.NewUserServiceClient(conn)
-		// ActivityAdd(c, "Eat", 4, "label4", "hemanth5@gmail.com")
-		duration, err := strconv.ParseInt(args[1], 10, 32)
+		duration, err := strconv.ParseInt(args[2], 10, 32)
 		if err != nil {
 			log.Fatal(err)
 		}
-		ActivityAdd(c, args[0], int32(duration), args[2], args[3])
+		ActivityAdd(c, args[0], args[1], int32(duration), args[3])
 	},
 }
 
