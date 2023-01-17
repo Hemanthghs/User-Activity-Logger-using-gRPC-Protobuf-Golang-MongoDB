@@ -61,7 +61,7 @@ Input:
 
 	email, activitytype, duration, label
 */
-func ActivityAdd(c activity_pb.UserServiceClient, activityType string, duration int32, label string, email string) {
+func ActivityAdd(c activity_pb.UserServiceClient, email string, activityType string, duration int32, label string) {
 	t := time.Now()
 	ts := t.Format("01-02-2006 15:04:05 Monday")
 	activityAddRequest := activity_pb.ActivityRequest{
