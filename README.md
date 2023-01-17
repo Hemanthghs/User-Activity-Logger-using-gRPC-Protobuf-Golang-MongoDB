@@ -57,38 +57,38 @@ User Activity Logger is a CLI application to to track users daily activities.Dai
   
   ### Start server
   
-     go run server/myserver.go
+     $ go run server/myserver.go
      
   ### Run client CLI
      
-     cd client
-     go install
+     $ cd client
+     $ go install
      
   ### Client CLI commands
      
   #### To add user
-     client adduser <name> <email> <phone-number>
+     $ client adduser <name> <email> <phone-number>
   
   #### To add activity
-     client addact <email> <activitytype> <duration> <label>
+     $ client addact <email> <activitytype> <duration> <label>
      
   #### To update activity
-     client adduser <name> <email> <phone-number>
+     $ client adduser <name> <email> <phone-number>
   
   #### To get user details
-     client getuser --email=<email>
+     $ client getuser --email=<email>
   
   #### To get user activity
-     client getact --email=<email>
+     $ client getact --email=<email>
   
   #### To check if user activity isdone
-     client isdone --email=<email> <activity-type>
+     $ client isdone --email=<email> <activity-type>
      
   #### To check is user activity isvalid
-     client isvalid --email=<email> <activity-type>
+     $ client isvalid --email=<email> <activity-type>
   
   #### To delete user
-     client deluser --email=<email>
+     $ client deluser --email=<email>
   
     
      
