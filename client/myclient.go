@@ -61,12 +61,12 @@ Input:
 
 	email, activitytype, duration, label
 */
-func ActivityAdd(c activity_pb.UserServiceClient, email string, activityType string, duration int32, label string) {
+func ActivityAdd(c activity_pb.UserServiceClient, email string, at string, duration int32, label string) {
 	t := time.Now()
 	ts := t.Format("01-02-2006 15:04:05 Monday")
 	activityAddRequest := activity_pb.ActivityRequest{
 		Activity: &activity_pb.Activity{
-			ActivityType: activityType,
+			Activitytype: at,
 			Timestamp:    ts,
 			Duration:     duration,
 			Label:        label,
@@ -84,12 +84,12 @@ function to create activity-is-valid request
 
 Inputs:
 
-	email, activityType (Play, Sleep, Eat, Study)
+	email, activitytype (Play, Sleep, Eat, Study)
 */
-func ActivityIsValid(c activity_pb.UserServiceClient, email string, activityType string) {
+func ActivityIsValid(c activity_pb.UserServiceClient, email string, activitytype string) {
 	activityIsValidRequest := activity_pb.ActivityIsValidRequest{
 		Email:        email,
-		Activitytype: activityType,
+		Activitytype: activitytype,
 	}
 	res, err := c.ActivityIsValid(context.Background(), &activityIsValidRequest)
 	handleError(err)
@@ -101,12 +101,12 @@ function to create activity-is-done request
 
 Inputs:
 
-	email, activityType (Play, Sleep, Eat, Study)
+	email, activitytype (Play, Sleep, Eat, Study)
 */
-func ActivityIsDone(c activity_pb.UserServiceClient, email string, activityType string) {
+func ActivityIsDone(c activity_pb.UserServiceClient, email string, activitytype string) {
 	activityIsDoneRequest := activity_pb.ActivityIsDoneRequest{
 		Email:        email,
-		Activitytype: activityType,
+		Activitytype: activitytype,
 	}
 	res, err := c.ActivityIsDone(context.Background(), &activityIsDoneRequest)
 	handleError(err)
