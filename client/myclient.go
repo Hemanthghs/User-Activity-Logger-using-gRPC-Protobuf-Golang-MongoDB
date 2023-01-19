@@ -28,7 +28,7 @@ Inputs:
 
 	name, email, phone-number
 */
-func UserAdd(c activity_pb.UserServiceClient, name string, email string, phone int64) {
+func UserAdd(c activity_pb.UserServiceClient, name string, email string, phone int64) string {
 	userAddRequest := activity_pb.UserRequest{
 		User: &activity_pb.User{
 			Name:  name,
@@ -38,7 +38,8 @@ func UserAdd(c activity_pb.UserServiceClient, name string, email string, phone i
 	}
 	res, err := c.UserAdd(context.Background(), &userAddRequest)
 	handleError(err)
-	fmt.Println(res)
+	// fmt.Println(res.Result)
+	return res.Result
 }
 
 /*
@@ -61,7 +62,7 @@ Input:
 
 	email, activitytype, duration, label
 */
-func ActivityAdd(c activity_pb.UserServiceClient, email string, at string, duration int32, label string) {
+func ActivityAdd(c activity_pb.UserServiceClient, email string, at string, duration int32, label string) string {
 	t := time.Now()
 	ts := t.Format("01-02-2006 15:04:05 Monday")
 	activityAddRequest := activity_pb.ActivityRequest{
@@ -76,7 +77,8 @@ func ActivityAdd(c activity_pb.UserServiceClient, email string, at string, durat
 
 	res, err := c.ActivityAdd(context.Background(), &activityAddRequest)
 	handleError(err)
-	fmt.Println(res)
+	// fmt.Println(res)
+	return res.Result
 }
 
 /*
@@ -157,13 +159,13 @@ Inputs:
 
 	email
 */
-func GetUser(c activity_pb.UserServiceClient, email string) {
+func GetUser(c activity_pb.UserServiceClient, email string) bool {
 	getUserRequest := activity_pb.GetUserRequest{
 		Email: email,
 	}
 	res, err := c.GetUser(context.Background(), &getUserRequest)
 	handleError(err)
-	fmt.Println(res)
+	return res.Status
 }
 
 /*
