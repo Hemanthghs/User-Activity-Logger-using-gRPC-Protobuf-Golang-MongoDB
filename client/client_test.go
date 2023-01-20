@@ -14,9 +14,16 @@ import (
 
 // }
 
-func gotWant(t *testing.T, got string, want string) {
+func check_string(t *testing.T, got string, want string) {
 	if got != want {
 		t.Errorf("got %q, wanted %q", got, want)
+	}
+}
+
+func check_bool(t *testing.T, got bool, want bool) {
+	if got != want {
+		s := fmt.Sprint("got", got, ", wanted", want)
+		t.Errorf(s)
 	}
 }
 
@@ -34,10 +41,10 @@ func TestUserAdd(t *testing.T) {
 
 	got := UserAdd(c, "testuser1", "testuser1@gmail.com", 1212121212)
 	want := "User already exist"
-	gotWant(t, got, want)
+	check_string(t, got, want)
 	got = UserAdd(c, "testuser2", "testuser2@gmail.com", 13131313)
 	want = "User already exist"
-	gotWant(t, got, want)
+	check_string(t, got, want)
 }
 
 func TestActivityAdd(t *testing.T) {
@@ -46,7 +53,7 @@ func TestActivityAdd(t *testing.T) {
 
 	got := ActivityAdd(c, "testuser1@gmail.com", "Sleep", 7, "label2")
 	want := "User activity added"
-	gotWant(t, got, want)
+	check_string(t, got, want)
 }
 
 func TestGetUser(t *testing.T) {
@@ -55,15 +62,39 @@ func TestGetUser(t *testing.T) {
 
 	got := GetUser(c, "testuser1@gmail.com")
 	want := true
-	if got != want {
-		s := fmt.Sprint("got", got, ", wanted", want)
-		t.Errorf(s)
-	}
+	check_bool(t, got, want)
 	got = GetUser(c, "unknownuser@gmail.com")
 	want = false
-	if got != want {
-		s := fmt.Sprint("got", got, ", wanted", want)
-		t.Errorf(s)
-	}
+	check_bool(t, got, want)
 
+}
+
+func TestGetActivity(t *testing.T) {
+	c, conn := connectToServer()
+	defer conn.Close()
+
+	got := GetActivity(c, "sai@gmail.com")
+	want := true
+
+	check_bool(t, got, want)
+}
+
+func TestUpdateUser(t *testing.T) {
+	c, conn := connectToServer()
+	defer conn.Close()
+	name := "hemanth sai 123"
+	email := "h@gmail.com"
+	phone := 909090909
+	got := UpdateUser(c, email, name, int64(phone))
+	want := "User details updated"
+	check_string(t, got, want)
+}
+
+func TestRemoveUser(t *testing.T) {
+	c, conn := connectToServer()
+	defer conn.Close()
+
+	got := RemoveUser(c, "testuser1@gmail.com")
+	want := "User deleted successfully"
+	check_string(t, got, want)
 }

@@ -122,7 +122,7 @@ Inputs:
 
 	email, name, phone-number
 */
-func UpdateUser(c activity_pb.UserServiceClient, email string, name string, phone int64) {
+func UpdateUser(c activity_pb.UserServiceClient, email string, name string, phone int64) string {
 	updateUserRequest := activity_pb.UpdateUserRequest{
 		User: &activity_pb.User{
 			Name:  name,
@@ -133,6 +133,7 @@ func UpdateUser(c activity_pb.UserServiceClient, email string, name string, phon
 	res, err := c.UpdateUser(context.Background(), &updateUserRequest)
 	handleError(err)
 	fmt.Println(res)
+	return res.Result
 
 }
 
@@ -143,13 +144,14 @@ Inputs:
 
 	email
 */
-func GetActivity(c activity_pb.UserServiceClient, email string) {
+func GetActivity(c activity_pb.UserServiceClient, email string) bool {
 	getActivityRequest := activity_pb.GetActivityRequest{
 		Email: email,
 	}
 	res, err := c.GetActivity(context.Background(), &getActivityRequest)
 	handleError(err)
 	fmt.Println(res)
+	return res.Status
 }
 
 /*
@@ -175,11 +177,12 @@ Inputs:
 
 	email
 */
-func RemoveUser(c activity_pb.UserServiceClient, email string) {
+func RemoveUser(c activity_pb.UserServiceClient, email string) string {
 	removeUserRequest := activity_pb.RemoveUserRequest{
 		Email: email,
 	}
 	res, err := c.RemoveUser(context.Background(), &removeUserRequest)
 	handleError(err)
 	fmt.Println(res)
+	return res.Result
 }
