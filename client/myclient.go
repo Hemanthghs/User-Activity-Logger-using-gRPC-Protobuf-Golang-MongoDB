@@ -88,7 +88,7 @@ Inputs:
 
 	email, activitytype (Play, Sleep, Eat, Study)
 */
-func ActivityIsValid(c activity_pb.UserServiceClient, email string, activitytype string) {
+func ActivityIsValid(c activity_pb.UserServiceClient, email string, activitytype string) string {
 	activityIsValidRequest := activity_pb.ActivityIsValidRequest{
 		Email:        email,
 		Activitytype: activitytype,
@@ -96,6 +96,7 @@ func ActivityIsValid(c activity_pb.UserServiceClient, email string, activitytype
 	res, err := c.ActivityIsValid(context.Background(), &activityIsValidRequest)
 	handleError(err)
 	fmt.Println(res)
+	return res.Result
 }
 
 /*
@@ -105,7 +106,7 @@ Inputs:
 
 	email, activitytype (Play, Sleep, Eat, Study)
 */
-func ActivityIsDone(c activity_pb.UserServiceClient, email string, activitytype string) {
+func ActivityIsDone(c activity_pb.UserServiceClient, email string, activitytype string) string {
 	activityIsDoneRequest := activity_pb.ActivityIsDoneRequest{
 		Email:        email,
 		Activitytype: activitytype,
@@ -113,6 +114,7 @@ func ActivityIsDone(c activity_pb.UserServiceClient, email string, activitytype 
 	res, err := c.ActivityIsDone(context.Background(), &activityIsDoneRequest)
 	handleError(err)
 	fmt.Println(res)
+	return res.Result
 }
 
 /*

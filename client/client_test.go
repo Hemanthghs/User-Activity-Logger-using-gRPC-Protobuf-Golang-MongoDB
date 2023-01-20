@@ -98,3 +98,29 @@ func TestRemoveUser(t *testing.T) {
 	want := "User deleted successfully"
 	check_string(t, got, want)
 }
+
+func TestActivityIsValid(t *testing.T) {
+	c, conn := connectToServer()
+	defer conn.Close()
+
+	got := ActivityIsValid(c, "sai@gmail.com", "Play")
+	want := "Activity is Not Valid"
+	check_string(t, got, want)
+
+	got = ActivityIsValid(c, "sai@gmail.com", "Study")
+	want = "Activity is Valid"
+	check_string(t, got, want)
+}
+
+func TestActivityIsDone(t *testing.T) {
+	c, conn := connectToServer()
+	defer conn.Close()
+
+	got := ActivityIsDone(c, "sai@gmail.com", "Play")
+	want := "Activity is Not Done"
+	check_string(t, got, want)
+
+	got = ActivityIsDone(c, "sai@gmail.com", "Study")
+	want = "Activity is Done"
+	check_string(t, got, want)
+}
