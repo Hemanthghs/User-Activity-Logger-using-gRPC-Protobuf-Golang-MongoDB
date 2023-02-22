@@ -28,7 +28,7 @@ Inputs:
 
 	name, email, phone-number
 */
-func UserAdd(c activity_pb.UserServiceClient, name string, email string, phone int64) {
+func UserAdd(c activity_pb.UserServiceClient, name string, email string, phone int64) string {
 	userAddRequest := activity_pb.UserRequest{
 		User: &activity_pb.User{
 			Name:  name,
@@ -38,7 +38,8 @@ func UserAdd(c activity_pb.UserServiceClient, name string, email string, phone i
 	}
 	res, err := c.UserAdd(context.Background(), &userAddRequest)
 	handleError(err)
-	fmt.Println(res)
+	// fmt.Println(res.Result)
+	return res.Result
 }
 
 /*
@@ -61,7 +62,7 @@ Input:
 
 	email, activitytype, duration, label
 */
-func ActivityAdd(c activity_pb.UserServiceClient, email string, at string, duration int32, label string) {
+func ActivityAdd(c activity_pb.UserServiceClient, email string, at string, duration int32, label string) string {
 	t := time.Now()
 	ts := t.Format("01-02-2006 15:04:05 Monday")
 	activityAddRequest := activity_pb.ActivityRequest{
@@ -76,7 +77,8 @@ func ActivityAdd(c activity_pb.UserServiceClient, email string, at string, durat
 
 	res, err := c.ActivityAdd(context.Background(), &activityAddRequest)
 	handleError(err)
-	fmt.Println(res)
+	// fmt.Println(res)
+	return res.Result
 }
 
 /*
@@ -86,7 +88,7 @@ Inputs:
 
 	email, activitytype (Play, Sleep, Eat, Study)
 */
-func ActivityIsValid(c activity_pb.UserServiceClient, email string, activitytype string) {
+func ActivityIsValid(c activity_pb.UserServiceClient, email string, activitytype string) string {
 	activityIsValidRequest := activity_pb.ActivityIsValidRequest{
 		Email:        email,
 		Activitytype: activitytype,
@@ -94,6 +96,7 @@ func ActivityIsValid(c activity_pb.UserServiceClient, email string, activitytype
 	res, err := c.ActivityIsValid(context.Background(), &activityIsValidRequest)
 	handleError(err)
 	fmt.Println(res)
+	return res.Result
 }
 
 /*
@@ -103,7 +106,7 @@ Inputs:
 
 	email, activitytype (Play, Sleep, Eat, Study)
 */
-func ActivityIsDone(c activity_pb.UserServiceClient, email string, activitytype string) {
+func ActivityIsDone(c activity_pb.UserServiceClient, email string, activitytype string) string {
 	activityIsDoneRequest := activity_pb.ActivityIsDoneRequest{
 		Email:        email,
 		Activitytype: activitytype,
@@ -111,6 +114,7 @@ func ActivityIsDone(c activity_pb.UserServiceClient, email string, activitytype 
 	res, err := c.ActivityIsDone(context.Background(), &activityIsDoneRequest)
 	handleError(err)
 	fmt.Println(res)
+	return res.Result
 }
 
 /*
@@ -120,7 +124,7 @@ Inputs:
 
 	email, name, phone-number
 */
-func UpdateUser(c activity_pb.UserServiceClient, email string, name string, phone int64) {
+func UpdateUser(c activity_pb.UserServiceClient, email string, name string, phone int64) string {
 	updateUserRequest := activity_pb.UpdateUserRequest{
 		User: &activity_pb.User{
 			Name:  name,
@@ -131,6 +135,7 @@ func UpdateUser(c activity_pb.UserServiceClient, email string, name string, phon
 	res, err := c.UpdateUser(context.Background(), &updateUserRequest)
 	handleError(err)
 	fmt.Println(res)
+	return res.Result
 
 }
 
@@ -141,13 +146,14 @@ Inputs:
 
 	email
 */
-func GetActivity(c activity_pb.UserServiceClient, email string) {
+func GetActivity(c activity_pb.UserServiceClient, email string) bool {
 	getActivityRequest := activity_pb.GetActivityRequest{
 		Email: email,
 	}
 	res, err := c.GetActivity(context.Background(), &getActivityRequest)
 	handleError(err)
 	fmt.Println(res)
+	return res.Status
 }
 
 /*
@@ -157,13 +163,13 @@ Inputs:
 
 	email
 */
-func GetUser(c activity_pb.UserServiceClient, email string) {
+func GetUser(c activity_pb.UserServiceClient, email string) bool {
 	getUserRequest := activity_pb.GetUserRequest{
 		Email: email,
 	}
 	res, err := c.GetUser(context.Background(), &getUserRequest)
 	handleError(err)
-	fmt.Println(res)
+	return res.Status
 }
 
 /*
@@ -173,11 +179,12 @@ Inputs:
 
 	email
 */
-func RemoveUser(c activity_pb.UserServiceClient, email string) {
+func RemoveUser(c activity_pb.UserServiceClient, email string) string {
 	removeUserRequest := activity_pb.RemoveUserRequest{
 		Email: email,
 	}
 	res, err := c.RemoveUser(context.Background(), &removeUserRequest)
 	handleError(err)
 	fmt.Println(res)
+	return res.Result
 }
